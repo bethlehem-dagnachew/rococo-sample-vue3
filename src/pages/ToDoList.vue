@@ -1,0 +1,182 @@
+<template>
+  <q-page class="flex justify-center">
+    <div class="todo-container q-mt-xl">
+      <!-- Header -->
+      <div class="text-h2 text-center text-primary q-mb-xl" style="color: rgba(175, 47, 47, 0.15)">
+        todos
+      </div>
+
+      <q-card flat bordered class="custom-card">
+        <!-- Add Todo Input -->
+        <div class="new-todo-wrapper">
+          <div class="row items-center">
+            <div class="toggle-all-wrapper q-pl-sm">
+              <q-checkbox
+                v-if="todos.length"
+                v-model="allCompleted"
+                color="primary"
+                class="toggle-all"
+                @update:model-value="toggleAll"
+              />
+            </div>
+            <q-input
+              v-model="newTodo"
+              placeholder="What needs to be done?"
+              dense
+              borderless
+              color="grey-4"
+              class="new-todo col"
+              @keyup.enter="addTodo"
+            />
+          </div>
+        </div>
+
+        <!-- Todo List -->
+        <q-list separator>
+          <TodoItem
+            v-for="todo in filteredTodos"
+            :key="todo.id"
+            :todo="todo"
+            @update:todo="updateTodo"
+            @delete="deleteTodo"
+          />
+        </q-list>
+
+        <!-- Footer with Filters -->
+        <TodoFilter
+          v-if="todos.length > 0"
+          v-model:filter="filter"
+          :items-left="activeCount"
+          :has-completed="hasCompleted"
+          @clear-completed="clearCompleted"
+        />
+      </q-card>
+
+      <div class="text-center text-grey-7 q-mt-md text-caption">Double-click to edit a todo</div>
+    </div>
+  </q-page>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+import TodoItem from 'components/TodoItem.vue'
+import TodoFilter from 'components/TodoFilter.vue'
+
+const newTodo = ref('')
+const filter = ref('all')
+
+const todos = ref([
+  {
+    id: 1,
+    title: 'Sample Task 1',
+    completed: false,
+  },
+  {
+    id: 2,
+    title: 'Sample Task 2',
+    completed: true,
+  },
+])
+
+const filteredTodos = computed(() => {
+  switch (filter.value) {
+    case 'active':
+      return todos.value.filter((todo) => !todo.completed)
+    case 'completed':
+      return todos.value.filter((todo) => todo.completed)
+    default:
+      return todos.value
+  }
+})
+
+const activeCount = computed(() => {
+  return todos.value.filter((todo) => !todo.completed).length
+})
+
+const hasCompleted = computed(() => {
+  return todos.value.some((todo) => todo.completed)
+})
+
+const allCompleted = computed({
+  get: () => todos.value.length > 0 && todos.value.every((todo) => todo.completed),
+  set: (value) => toggleAll(value),
+})
+
+function addTodo() {
+  const title = newTodo.value.trim()
+  if (title) {
+    todos.value.push({
+      id: Date.now(),
+      title,
+      completed: false,
+    })
+    newTodo.value = ''
+  }
+}
+
+function updateTodo(updatedTodo) {
+  const index = todos.value.findIndex((t) => t.id === updatedTodo.id)
+  if (index !== -1) {
+    todos.value[index] = updatedTodo
+  }
+}
+
+function deleteTodo(todo) {
+  todos.value = todos.value.filter((t) => t.id !== todo.id)
+}
+
+function clearCompleted() {
+  todos.value = todos.value.filter((todo) => !todo.completed)
+}
+
+function toggleAll(value) {
+  todos.value = todos.value.map((todo) => ({
+    ...todo,
+    completed: value,
+  }))
+}
+</script>
+
+<style lang="scss" scoped>
+.todo-container {
+  width: 100%;
+  max-width: 550px;
+}
+
+.custom-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 16px 16px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.new-todo-wrapper {
+  border-bottom: 1px solid #e6e6e6;
+  position: relative;
+}
+
+.toggle-all-wrapper {
+  width: 45px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+
+  :deep(.q-checkbox) {
+    height: 34px;
+  }
+}
+
+.new-todo {
+  font-size: 24px;
+  font-weight: 300;
+
+  :deep(.q-field__native) {
+    padding: 16px 16px 16px 0;
+
+    &::placeholder {
+      font-style: italic;
+      font-weight: 300;
+      color: #918e8e;
+    }
+  }
+}
+</style>

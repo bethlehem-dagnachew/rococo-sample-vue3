@@ -56,6 +56,11 @@ const linksList = [
     icon: 'code',
     link: '/dashboard',
   },
+  {
+    title: 'My Todos',
+    icon: 'code',
+    link: '/todo-list',
+  },
 ]
 
 const leftDrawerOpen = ref(false)
