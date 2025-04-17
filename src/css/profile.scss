@@ -1,31 +1,39 @@
 .profile-container {
   width: 100%;
-  max-width: 700px;
-  
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  animation: fadeIn 0.8s ease-out;
+
   .q-card {
+    background: white;
     border-radius: 16px;
-    transition: all 0.3s ease;
-    
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: cardAppear 0.8s ease-out;
+
     &:hover {
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
       transform: translateY(-2px);
     }
   }
-  
+
   .q-input {
     .q-field__control {
       border-radius: 12px;
       height: 48px;
       transition: all 0.2s ease;
-      
+
       &:hover {
         background-color: var(--q-primary-2);
       }
-      
+
       &::before {
         border-color: var(--q-primary-3);
       }
     }
-    
+
     .q-field__label {
       transform: translateY(-50%) scale(0.85);
       background: var(--q-primary-1);
@@ -33,18 +41,18 @@
       margin-left: 8px;
       font-size: 1rem;
     }
-    
+
     .q-field__native {
       padding: 0 16px;
       font-size: 1.1rem;
     }
-    
+
     &.q-field--focused {
       .q-field__label {
         color: var(--q-primary);
         font-size: 0.9rem;
       }
-      
+
       .q-field__control {
         &::before {
           border-color: var(--q-primary);
@@ -53,17 +61,98 @@
       }
     }
   }
-  
+
   .q-btn {
     border-radius: 8px;
     height: 48px;
-    
+
     &--outline {
       border-width: 2px;
     }
   }
-  
+
   .q-separator {
     opacity: 0.2;
   }
-} 
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.profile-header {
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.profile-avatar {
+  animation: scaleIn 0.5s ease-out 0.2s both;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.profile-info {
+  animation: slideUp 0.5s ease-out 0.4s both;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-stats {
+  animation: fadeIn 0.5s ease-out 0.6s both;
+}
+
+.stat-item {
+  animation: slideIn 0.5s ease-out;
+
+  @for $i from 1 through 2 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.1 + 0.6}s;
+    }
+  }
+}
