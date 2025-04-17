@@ -1,12 +1,10 @@
 <template>
   <div class="filter-section q-px-md q-py-sm">
     <div class="row items-center justify-between">
-      <!-- Items counter -->
       <span class="todo-count text-grey-8">
         {{ itemsLeft }} {{ itemsLeft === 1 ? 'item' : 'items' }} left
       </span>
 
-      <!-- Filters -->
       <div class="filters">
         <q-btn
           flat
@@ -34,7 +32,6 @@
         />
       </div>
 
-      <!-- Clear completed -->
       <q-btn
         v-if="hasCompleted"
         flat
@@ -50,22 +47,13 @@
 
 <script setup>
 defineProps({
-  filter: {
-    type: String,
-    required: true,
-  },
-  itemsLeft: {
-    type: Number,
-    required: true,
-  },
-  hasCompleted: {
-    type: Boolean,
-    required: true,
-  },
+  filter: String,
+  itemsLeft: Number,
+  hasCompleted: Boolean,
 })
-
 defineEmits(['update:filter', 'clear-completed'])
 </script>
+
 
 <style lang="scss" scoped>
 .filter-section {

@@ -1,7 +1,6 @@
 <template>
   <q-page class="flex justify-center">
     <div class="todo-container q-mt-xl">
-      <!-- Header -->
       <div class="text-h2 text-center text-primary q-mb-xl" style="color: rgba(175, 47, 47, 0.15)">
         todos
       </div>
@@ -34,15 +33,15 @@
         <!-- Todo List -->
         <q-list separator>
           <TodoItem
-            v-for="todo in filteredTodos"
-            :key="todo.id"
+            v-for="todo in todos"
+            :key="todo.entity_id"
             :todo="todo"
             @update:todo="updateTodo"
             @delete="deleteTodo"
           />
         </q-list>
 
-        <!-- Footer with Filters -->
+        <!-- todo filter -->
         <TodoFilter
           v-if="todos.length > 0"
           v-model:filter="filter"
@@ -58,84 +57,94 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import TodoService from 'src/services/todo.service'
 import TodoItem from 'components/TodoItem.vue'
 import TodoFilter from 'components/TodoFilter.vue'
 
 const newTodo = ref('')
 const filter = ref('all')
+const todos = ref([])
 
-const todos = ref([
-  {
-    id: 1,
-    title: 'Sample Task 1',
-    completed: false,
-  },
-  {
-    id: 2,
-    title: 'Sample Task 2',
-    completed: true,
-  },
-])
-
-const filteredTodos = computed(() => {
-  switch (filter.value) {
-    case 'active':
-      return todos.value.filter((todo) => !todo.completed)
-    case 'completed':
-      return todos.value.filter((todo) => todo.completed)
-    default:
-      return todos.value
+const fetchTodos = async () => {
+  try {
+    todos.value = await TodoService.getAll(filter.value)
+  } catch (error) {
+    console.error('Failed to fetch todos:', error)
   }
-})
+}
 
-const activeCount = computed(() => {
-  return todos.value.filter((todo) => !todo.completed).length
-})
+onMounted(fetchTodos)
+watch(filter, fetchTodos)
 
-const hasCompleted = computed(() => {
-  return todos.value.some((todo) => todo.completed)
-})
+const activeCount = computed(() => todos.value.filter((todo) => !todo.is_completed).length)
+const hasCompleted = computed(() => todos.value.some((todo) => todo.is_completed))
 
 const allCompleted = computed({
-  get: () => todos.value.length > 0 && todos.value.every((todo) => todo.completed),
-  set: (value) => toggleAll(value),
+  get: () => todos.value.length > 0 && todos.value.every((todo) => todo.is_completed),
+  set: (val) => toggleAll(val),
 })
 
-function addTodo() {
+const addTodo = async () => {
   const title = newTodo.value.trim()
-  if (title) {
-    todos.value.push({
-      id: Date.now(),
-      title,
-      completed: false,
-    })
+  if (!title) return
+
+  try {
+    await TodoService.create(title)
     newTodo.value = ''
+    await fetchTodos()
+  } catch (error) {
+    console.error('Failed to add todo:', error)
   }
 }
 
-function updateTodo(updatedTodo) {
-  const index = todos.value.findIndex((t) => t.id === updatedTodo.id)
-  if (index !== -1) {
-    todos.value[index] = updatedTodo
+const updateTodo = async (updatedTodo) => {
+  try {
+    await TodoService.update(updatedTodo.entity_id, {
+      title: updatedTodo.title,
+      is_completed: updatedTodo.is_completed,
+    })
+    await fetchTodos()
+  } catch (error) {
+    console.error('Failed to update todo:', error)
   }
 }
 
-function deleteTodo(todo) {
-  todos.value = todos.value.filter((t) => t.id !== todo.id)
+const deleteTodo = async (todo) => {
+  try {
+    await TodoService.delete(todo.entity_id)
+    await fetchTodos()
+  } catch (error) {
+    console.error('Failed to delete todo:', error)
+  }
 }
 
-function clearCompleted() {
-  todos.value = todos.value.filter((todo) => !todo.completed)
+const clearCompleted = async () => {
+  try {
+    await TodoService.clearCompleted()
+    await fetchTodos()
+  } catch (error) {
+    console.error('Failed to clear completed todos:', error)
+  }
 }
 
-function toggleAll(value) {
-  todos.value = todos.value.map((todo) => ({
-    ...todo,
-    completed: value,
-  }))
+const toggleAll = async (value) => {
+  try {
+    await Promise.all(
+      todos.value.map((todo) =>
+        TodoService.update(todo.entity_id, {
+          title: todo.title,
+          is_completed: value,
+        })
+      )
+    )
+    await fetchTodos()
+  } catch (error) {
+    console.error('Failed to toggle todos:', error)
+  }
 }
 </script>
+
 
 <style lang="scss" scoped>
 .todo-container {

@@ -1,8 +1,8 @@
 <template>
-  <q-item class="todo-item q-pa-sm" :class="{ completed: todo.completed }">
+  <q-item class="todo-item q-pa-sm" :class="{ completed: todo.is_completed }">
     <q-item-section avatar>
       <q-checkbox
-        :model-value="todo.completed"
+        :model-value="todo.is_completed"
         @update:model-value="updateCompleted"
         color="primary"
         class="q-mr-sm"
@@ -11,7 +11,7 @@
 
     <q-item-section>
       <q-input
-        v-if="editingTodoId === todo.id"
+        v-if="isEditing"
         v-model="editingTitle"
         dense
         autofocus
@@ -19,11 +19,12 @@
         placeholder="Edit todo"
         @keyup.enter="saveEdit"
         @blur="saveEdit"
+        @keyup.esc="cancelEdit"
       />
       <q-item-label
         v-else
         class="todo-text"
-        :class="{ 'text-strike': todo.completed }"
+        :class="{ 'text-strike': todo.is_completed }"
         @dblclick="startEditing"
       >
         {{ todo.title }}
@@ -31,17 +32,15 @@
     </q-item-section>
 
     <q-item-section side>
-      <div class="row q-gutter-sm actions">
-        <q-btn
-          flat
-          round
-          dense
-          icon="close"
-          color="grey-7"
-          class="delete-btn"
-          @click="$emit('delete', todo)"
-        />
-      </div>
+      <q-btn
+        flat
+        round
+        dense
+        icon="close"
+        color="grey-7"
+        class="delete-btn"
+        @click="$emit('delete', todo)"
+      />
     </q-item-section>
   </q-item>
 </template>
@@ -58,29 +57,35 @@ const props = defineProps({
 
 const emit = defineEmits(['update:todo', 'delete'])
 
-const editingTodoId = ref(null)
+const isEditing = ref(false)
 const editingTitle = ref('')
 
-function updateCompleted(value) {
+const updateCompleted = (value) => {
   emit('update:todo', {
     ...props.todo,
-    completed: value,
+    is_completed: value,
   })
 }
 
-function startEditing() {
-  editingTodoId.value = props.todo.id
+const startEditing = () => {
+  isEditing.value = true
   editingTitle.value = props.todo.title
 }
 
-function saveEdit() {
-  if (editingTitle.value.trim()) {
+const saveEdit = () => {
+  const title = editingTitle.value.trim()
+  if (title && title !== props.todo.title) {
     emit('update:todo', {
       ...props.todo,
-      title: editingTitle.value.trim(),
+      title,
     })
   }
-  editingTodoId.value = null
+  isEditing.value = false
+}
+
+const cancelEdit = () => {
+  isEditing.value = false
+  editingTitle.value = props.todo.title
 }
 </script>
 
