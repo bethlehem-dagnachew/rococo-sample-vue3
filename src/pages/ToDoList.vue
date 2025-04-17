@@ -1,7 +1,9 @@
 <template>
   <q-page class="flex justify-center">
     <div class="todo-container">
-      <div class="todo-header">todos</div>
+      <div class="todo-header">
+        <span>Todos</span>
+      </div>
 
       <q-card flat bordered class="custom-card">
         <!-- Add Todo Input -->
