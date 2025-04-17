@@ -14,7 +14,13 @@
           <q-input v-model="email" type="email" label="Email" outlined class="q-mb-lg" />
 
           <!-- Reset password Button -->
-          <q-btn label="Reset password" color="primary" type="submit" class="full-width" />
+          <q-btn
+            label="Reset password"
+            color="primary"
+            type="submit"
+            class="full-width"
+            :loading="isLoading"
+          />
 
           <!-- Login Link -->
           <div class="text-center q-mt-md">
@@ -22,7 +28,7 @@
           </div>
           <!-- Signup Link -->
           <div class="text-center q-mt-md">
-            <span>Don’t have an account? </span>
+            <span>Don't have an account? </span>
             <router-link to="/signup">Sign up</router-link>
           </div>
         </q-form>
@@ -33,14 +39,26 @@
   
 <script setup>
 import { ref } from 'vue'
+import { useAuthStore } from 'stores/auth'
+import { useRouter } from 'vue-router'
 
+const authStore = useAuthStore()
+const router = useRouter()
 const email = ref('')
-const password = ref('')
+const isLoading = ref(false)
 
-// Placeholder login function
-function onSubmit() {
-  // Implement actual login logic here
-  console.log('Logging in with:', email.value, password.value)
+async function onSubmit() {
+  isLoading.value = true
+  try {
+    const success = await authStore.forgotPassword(email.value)
+    if (success) {
+      // Show success message and wait for 3 seconds before redirecting
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+      router.push('/login')
+    }
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
   

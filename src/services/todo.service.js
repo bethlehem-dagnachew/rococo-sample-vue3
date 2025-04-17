@@ -73,6 +73,16 @@ class TodoService {
       throw error
     }
   }
+
+  async markAll(status) {
+    try {
+      const response = await axiosInstance.post('/todo/mark-all', { status })
+      return response.data
+    } catch (error) {
+      console.error('Error marking all todos:', error)
+      throw error
+    }
+  }
 }
 
 export default new TodoService()

@@ -1,15 +1,13 @@
 <template>
   <q-page class="flex justify-center">
-    <div class="todo-container q-mt-xl">
-      <div class="text-h2 text-center text-primary q-mb-xl" style="color: rgba(175, 47, 47, 0.15)">
-        todos
-      </div>
+    <div class="todo-container">
+      <div class="todo-header">todos</div>
 
       <q-card flat bordered class="custom-card">
         <!-- Add Todo Input -->
         <div class="new-todo-wrapper">
           <div class="row items-center">
-            <div class="toggle-all-wrapper q-pl-sm">
+            <div class="toggle-all-wrapper">
               <q-checkbox
                 v-if="todos.length"
                 v-model="allCompleted"
@@ -23,10 +21,10 @@
               placeholder="What needs to be done?"
               dense
               borderless
-              color="grey-4"
               class="new-todo col"
               @keyup.enter="addTodo"
-            />
+            >
+            </q-input>
           </div>
         </div>
 
@@ -43,7 +41,7 @@
 
         <!-- todo filter -->
         <TodoFilter
-          v-if="todos.length > 0"
+          v-if="hasAnyTodos"
           v-model:filter="filter"
           :items-left="activeCount"
           :has-completed="hasCompleted"
@@ -51,7 +49,10 @@
         />
       </q-card>
 
-      <div class="text-center text-grey-7 q-mt-md text-caption">Double-click to edit a todo</div>
+      <div class="edit-hint">
+        <q-icon name="info" color="grey-6" size="sm" />
+        <span>Double-click to edit a todo</span>
+      </div>
     </div>
   </q-page>
 </template>
@@ -61,16 +62,27 @@ import { ref, computed, watch, onMounted } from 'vue'
 import TodoService from 'src/services/todo.service'
 import TodoItem from 'components/TodoItem.vue'
 import TodoFilter from 'components/TodoFilter.vue'
+import { useQuasar } from 'quasar'
 
+const $q = useQuasar()
 const newTodo = ref('')
 const filter = ref('all')
 const todos = ref([])
+const allTodos = ref([])
+const isLoading = ref(false)
 
 const fetchTodos = async () => {
   try {
+    if (allTodos.value.length === 0) {
+      allTodos.value = await TodoService.getAll('all')
+    }
     todos.value = await TodoService.getAll(filter.value)
   } catch (error) {
     console.error('Failed to fetch todos:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Failed to fetch todos',
+    })
   }
 }
 
@@ -79,6 +91,7 @@ watch(filter, fetchTodos)
 
 const activeCount = computed(() => todos.value.filter((todo) => !todo.is_completed).length)
 const hasCompleted = computed(() => todos.value.some((todo) => todo.is_completed))
+const hasAnyTodos = computed(() => allTodos.value.length > 0)
 
 const allCompleted = computed({
   get: () => todos.value.length > 0 && todos.value.every((todo) => todo.is_completed),
@@ -92,9 +105,14 @@ const addTodo = async () => {
   try {
     await TodoService.create(title)
     newTodo.value = ''
+    allTodos.value = await TodoService.getAll('all')
     await fetchTodos()
   } catch (error) {
     console.error('Failed to add todo:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Failed to add todo',
+    })
   }
 }
 
@@ -104,88 +122,66 @@ const updateTodo = async (updatedTodo) => {
       title: updatedTodo.title,
       is_completed: updatedTodo.is_completed,
     })
+    allTodos.value = await TodoService.getAll('all')
     await fetchTodos()
   } catch (error) {
     console.error('Failed to update todo:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Failed to update todo',
+    })
   }
 }
 
 const deleteTodo = async (todo) => {
   try {
     await TodoService.delete(todo.entity_id)
+    allTodos.value = await TodoService.getAll('all')
     await fetchTodos()
   } catch (error) {
     console.error('Failed to delete todo:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Failed to delete todo',
+    })
   }
 }
 
 const clearCompleted = async () => {
   try {
     await TodoService.clearCompleted()
+    allTodos.value = await TodoService.getAll('all')
     await fetchTodos()
   } catch (error) {
     console.error('Failed to clear completed todos:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Failed to clear completed todos',
+    })
   }
 }
 
 const toggleAll = async (value) => {
+  if (isLoading.value) return
+  isLoading.value = true
   try {
-    await Promise.all(
-      todos.value.map((todo) =>
-        TodoService.update(todo.entity_id, {
-          title: todo.title,
-          is_completed: value,
-        })
-      )
-    )
+    const status = value ? 'completed' : 'active'
+    await TodoService.markAll(status)
+    allTodos.value = await TodoService.getAll('all')
     await fetchTodos()
   } catch (error) {
     console.error('Failed to toggle todos:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Failed to toggle todos',
+    })
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
 
 
 <style lang="scss" scoped>
-.todo-container {
-  width: 100%;
-  max-width: 550px;
-}
-
-.custom-card {
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 16px 16px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-}
-
-.new-todo-wrapper {
-  border-bottom: 1px solid #e6e6e6;
-  position: relative;
-}
-
-.toggle-all-wrapper {
-  width: 45px;
-  height: 65px;
-  display: flex;
-  align-items: center;
-
-  :deep(.q-checkbox) {
-    height: 34px;
-  }
-}
-
-.new-todo {
-  font-size: 24px;
-  font-weight: 300;
-
-  :deep(.q-field__native) {
-    padding: 16px 16px 16px 0;
-
-    &::placeholder {
-      font-style: italic;
-      font-weight: 300;
-      color: #918e8e;
-    }
-  }
-}
+@import '../css/todo.scss';
 </style>

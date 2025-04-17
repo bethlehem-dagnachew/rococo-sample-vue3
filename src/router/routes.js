@@ -13,6 +13,10 @@ const routes = [
         component: () => import('pages/ToDoList.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: 'profile',
+        component: () => import('pages/ProfileView.vue'),
+      },
     ],
   },
 
