@@ -13,16 +13,28 @@
           <div class="stat-card">
             <q-icon name="task_alt" size="32px" color="primary" />
             <div class="stat-content">
-              <span class="stat-value">{{ activeTasksCount }}</span>
-              <span class="stat-label">Active Tasks</span>
+              <template v-if="isLoading">
+                <q-skeleton type="text" width="40px" height="24px" />
+                <q-skeleton type="text" width="80px" height="16px" />
+              </template>
+              <template v-else>
+                <span class="stat-value">{{ activeTasksCount }}</span>
+                <span class="stat-label">Active Tasks</span>
+              </template>
             </div>
           </div>
 
           <div class="stat-card">
             <q-icon name="check_circle" size="32px" color="positive" />
             <div class="stat-content">
-              <span class="stat-value">{{ completedTasksCount }}</span>
-              <span class="stat-label">Completed Tasks</span>
+              <template v-if="isLoading">
+                <q-skeleton type="text" width="40px" height="24px" />
+                <q-skeleton type="text" width="80px" height="16px" />
+              </template>
+              <template v-else>
+                <span class="stat-value">{{ completedTasksCount }}</span>
+                <span class="stat-label">Completed Tasks</span>
+              </template>
             </div>
           </div>
         </div>
@@ -64,8 +76,10 @@ const $q = useQuasar()
 
 const activeTasksCount = ref(0)
 const completedTasksCount = ref(0)
+const isLoading = ref(true)
 
 const fetchTaskCounts = async () => {
+  isLoading.value = true
   try {
     const activeTasks = await TodoService.getAll('active')
     const completedTasks = await TodoService.getAll('completed')
@@ -78,6 +92,8 @@ const fetchTaskCounts = async () => {
       color: 'negative',
       message: 'Failed to load task statistics',
     })
+  } finally {
+    isLoading.value = false
   }
 }
 

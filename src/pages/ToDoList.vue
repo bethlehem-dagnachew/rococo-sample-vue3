@@ -28,8 +28,13 @@
           </div>
         </div>
 
+        <!-- Loading State -->
+        <div v-if="isLoading" class="q-pa-md">
+          <q-skeleton type="text" v-for="n in 3" :key="n" class="q-mb-sm" />
+        </div>
+
         <!-- Todo List -->
-        <q-list separator>
+        <q-list v-else separator>
           <TodoItem
             v-for="todo in todos"
             :key="todo.entity_id"
@@ -69,9 +74,10 @@ const newTodo = ref('')
 const filter = ref('all')
 const todos = ref([])
 const allTodos = ref([])
-const isLoading = ref(false)
+const isLoading = ref(true)
 
 const fetchTodos = async () => {
+  isLoading.value = true
   try {
     if (allTodos.value.length === 0) {
       allTodos.value = await TodoService.getAll('all')
@@ -83,6 +89,8 @@ const fetchTodos = async () => {
       color: 'negative',
       message: 'Failed to fetch todos',
     })
+  } finally {
+    isLoading.value = false
   }
 }
 

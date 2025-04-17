@@ -6,39 +6,50 @@
         <div class="row items-center q-gutter-lg q-mb-">
           <q-avatar size="80px" color="primary" text-color="white" icon="person" class="shadow-4" />
           <div class="column">
-            <div class="row items-center q-gutter-xs">
-              <div class="text-h4 text-weight-bold text-primary">
-                {{ profile.first_name }} {{ profile.last_name }}
+            <template v-if="isLoading">
+              <q-skeleton type="text" width="200px" height="32px" class="q-mb-sm" />
+              <q-skeleton type="text" width="120px" height="20px" />
+            </template>
+            <template v-else>
+              <div class="row items-center q-gutter-xs">
+                <div class="text-h4 text-weight-bold text-primary">
+                  {{ profile.first_name }} {{ profile.last_name }}
+                </div>
               </div>
-            </div>
-            <div class="text-subtitle1 text-grey-7 q-mt-sm">User Profile</div>
+              <div class="text-subtitle1 text-grey-7 q-mt-sm">User Profile</div>
+            </template>
           </div>
         </div>
         <q-separator color="primary" class="q-my-lg" />
 
         <!-- View Mode -->
-        <div v-if="!isEditing" class="q-gutter-y-lg q-my-md">
-          <div class="row items-center q-pa-md rounded-borders bg-grey-2">
-            <div class="col-4 text-grey-7 text-weight-medium text-h6">First Name</div>
-            <div class="col text-h6 text-primary">{{ profile.first_name }}</div>
+        <template v-if="!isEditing">
+          <div v-if="isLoading" class="q-gutter-y-lg q-my-md">
+            <q-skeleton type="text" width="100%" height="60px" v-for="n in 2" :key="n" />
           </div>
-          <div class="row items-center q-pa-md rounded-borders bg-grey-2">
-            <div class="col-4 text-grey-7 text-weight-medium text-h6">Last Name</div>
-            <div class="col text-h6 text-primary">{{ profile.last_name }}</div>
-          </div>
+          <div v-else class="q-gutter-y-lg q-my-md">
+            <div class="row items-center q-pa-md rounded-borders bg-grey-2">
+              <div class="col-4 text-grey-7 text-weight-medium text-h6">First Name</div>
+              <div class="col text-h6 text-primary">{{ profile.first_name }}</div>
+            </div>
+            <div class="row items-center q-pa-md rounded-borders bg-grey-2">
+              <div class="col-4 text-grey-7 text-weight-medium text-h6">Last Name</div>
+              <div class="col text-h6 text-primary">{{ profile.last_name }}</div>
+            </div>
 
-          <div class="row justify-end q-mt-xl">
-            <q-btn
-              outline
-              color="primary"
-              label="Edit "
-              icon="edit"
-              class="text-weight-medium text-body1 q-px-lg"
-              size="lg"
-              @click="startEditing"
-            />
+            <div class="row justify-end q-mt-xl">
+              <q-btn
+                outline
+                color="primary"
+                label="Edit "
+                icon="edit"
+                class="text-weight-medium text-body1 q-px-lg"
+                size="lg"
+                @click="startEditing"
+              />
+            </div>
           </div>
-        </div>
+        </template>
 
         <!-- Edit Mode -->
         <q-form v-else @submit="saveProfile" class="q-gutter-y-sm">
@@ -117,8 +128,10 @@ const editedProfile = ref({
 })
 const isEditing = ref(false)
 const isSaving = ref(false)
+const isLoading = ref(true)
 
 const fetchProfile = async () => {
+  isLoading.value = true
   try {
     profile.value = await ProfileService.getProfile()
   } catch (error) {
@@ -127,6 +140,8 @@ const fetchProfile = async () => {
       color: 'negative',
       message: error.response?.data?.message || 'Failed to load profile',
     })
+  } finally {
+    isLoading.value = false
   }
 }
 
