@@ -5,7 +5,7 @@
   .q-item-label {
     font-size: 1.2rem;
     margin-bottom: 1.5rem;
-    color: var(--q-primary);
+    color: #1976d2;
   }
 
   .q-item {
@@ -15,7 +15,7 @@
     font-size: 1rem;
 
     .q-icon {
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: rgba(0, 0, 0, 0.03);
       padding: 10px;
       border-radius: 10px;
       margin-right: 12px;
@@ -23,23 +23,35 @@
     }
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.04);
+      background: rgba(0, 0, 0, 0.02) !important;
       transform: translateX(4px);
+      color: #1976d2;
 
       .q-icon {
-        background-color: rgba(0, 0, 0, 0.08);
+        background-color: rgba(0, 0, 0, 0.06);
+        color: #1976d2;
       }
     }
 
     &.router-link-active {
-      background-color: rgba(var(--q-primary-rgb), 0.1);
-      color: var(--q-primary);
+      background: rgba(0, 0, 0, 0.08) !important;
+      color: #1976d2;
       font-weight: 500;
 
       .q-icon {
-        background-color: rgba(var(--q-primary-rgb), 0.2);
-        color: var(--q-primary);
+        background-color: rgba(0, 0, 0, 0.3);
+        color: #1976d2;
       }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.08) !important;
+        transform: translateX(4px);
+      }
+    }
+
+    &.q-hoverable:hover > .q-focus-helper {
+      background: none !important;
+      opacity: 0 !important;
     }
   }
 }

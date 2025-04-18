@@ -18,9 +18,8 @@
 }
 
 .todo-header {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 300;
-  color: var(--q-primary);
   text-align: left;
   margin-bottom: 0.5rem;
   padding: 0.25rem 0;
@@ -34,14 +33,13 @@
     content: '';
     display: block;
     width: 4px;
-    height: 2.5rem;
-    background: var(--q-primary);
+    height: 2rem;
+    background: #1976d2;
     border-radius: 2px;
   }
 
   .header-icon {
-    color: var(--q-primary);
-    font-size: 2rem;
+    font-size: 1.75rem;
     opacity: 0.8;
   }
 }
@@ -178,8 +176,9 @@
     opacity: 0;
     transform: scale(0.8) translateX(10px);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 12px;
-    height: 12px;
+    width: 24px;
+    height: 24px;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -187,8 +186,12 @@
     background: rgba(0, 0, 0, 0.05);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
+    :deep(.q-icon) {
+      font-size: 20px;
+    }
+
     &:hover {
-      background: rgba(var(--q-negative-rgb), 0.1);
+      background: rgba(0, 0, 0, 0.1);
       color: var(--q-negative) !important;
       transform: scale(1.1) translateX(0);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -236,16 +239,15 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
       &:hover {
-        color: var(--q-primary);
-        background: rgba(var(--q-primary-rgb), 0.1);
+        background: rgba(0, 0, 0, 0.05);
         transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
 
       &.selected {
-        color: var(--q-primary);
-        background: rgba(var(--q-primary-rgb), 0.1);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        color: #1976d2;
+        background: rgba(0, 0, 0, 0.05);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
     }
   }
@@ -258,10 +260,10 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:hover {
-      color: var(--q-primary);
-      background: rgba(var(--q-primary-rgb), 0.1);
+      color: #1976d2;
+      background: rgba(0, 0, 0, 0.05);
       transform: translateY(-1px);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
   }
 }

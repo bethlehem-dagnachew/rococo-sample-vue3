@@ -1,50 +1,50 @@
 <template>
   <q-page class="flex flex-center bg-grey-1">
     <div class="profile-container q-pa-md">
-      <q-card bordered class="q-pa-xl shadow-10 rounded-borders">
+      <q-card bordered class="q-pa-lg shadow-10 rounded-borders">
         <!-- Profile Header -->
-        <div class="row items-center q-gutter-lg q-mb-">
-          <q-avatar size="80px" color="primary" text-color="white" icon="person" class="shadow-4" />
+        <div class="row items-center q-gutter-md q-mb-md">
+          <q-avatar size="60px" color="primary" text-color="white" icon="person" class="shadow-4" />
           <div class="column">
             <template v-if="isLoading">
-              <q-skeleton type="text" width="200px" height="32px" class="q-mb-sm" />
-              <q-skeleton type="text" width="120px" height="20px" />
+              <q-skeleton type="text" width="200px" height="24px" class="q-mb-sm" />
+              <q-skeleton type="text" width="120px" height="16px" />
             </template>
             <template v-else>
               <div class="row items-center q-gutter-xs">
-                <div class="text-h4 text-weight-bold text-primary">
+                <div class="text-h5 text-weight-bold text-primary">
                   {{ profile.first_name }} {{ profile.last_name }}
                 </div>
               </div>
-              <div class="text-subtitle1 text-grey-7 q-mt-sm">User Profile</div>
+              <div class="text-subtitle2 text-grey-7 q-mt-xs">User Profile</div>
             </template>
           </div>
         </div>
-        <q-separator color="primary" class="q-my-lg" />
+        <q-separator color="primary" class="q-my-md" />
 
         <!-- View Mode -->
         <template v-if="!isEditing">
-          <div v-if="isLoading" class="q-gutter-y-lg q-my-md">
-            <q-skeleton type="text" width="100%" height="60px" v-for="n in 2" :key="n" />
+          <div v-if="isLoading" class="q-gutter-y-md q-my-sm">
+            <q-skeleton type="text" width="100%" height="48px" v-for="n in 2" :key="n" />
           </div>
-          <div v-else class="q-gutter-y-lg q-my-md">
-            <div class="row items-center q-pa-md rounded-borders bg-grey-2">
-              <div class="col-4 text-grey-7 text-weight-medium text-h6">First Name</div>
-              <div class="col text-h6 text-primary">{{ profile.first_name }}</div>
+          <div v-else class="q-gutter-y-md q-my-sm">
+            <div class="row items-center q-pa-sm rounded-borders bg-grey-2">
+              <div class="col-4 text-grey-7 text-weight-medium text-subtitle1">First Name</div>
+              <div class="col text-subtitle1 text-primary">{{ profile.first_name }}</div>
             </div>
-            <div class="row items-center q-pa-md rounded-borders bg-grey-2">
-              <div class="col-4 text-grey-7 text-weight-medium text-h6">Last Name</div>
-              <div class="col text-h6 text-primary">{{ profile.last_name }}</div>
+            <div class="row items-center q-pa-sm rounded-borders bg-grey-2">
+              <div class="col-4 text-grey-7 text-weight-medium text-subtitle1">Last Name</div>
+              <div class="col text-subtitle1 text-primary">{{ profile.last_name }}</div>
             </div>
 
-            <div class="row justify-end q-mt-xl">
+            <div class="row justify-end q-mt-lg">
               <q-btn
                 outline
                 color="primary"
-                label="Edit "
+                label="Edit"
                 icon="edit"
-                class="text-weight-medium text-body1 q-px-lg"
-                size="lg"
+                class="text-weight-medium text-body2 q-px-md"
+                size="md"
                 @click="startEditing"
               />
             </div>
@@ -57,11 +57,11 @@
             v-model="editedProfile.first_name"
             label="First Name"
             :rules="[(val) => !!val || 'First name is required']"
-            class="text-body1"
+            class="text-body2"
             outlined
             stack-label
-            label-class="text-subtitle1 text-weight-medium text-grey-8"
-            input-class="text-body1"
+            label-class="text-subtitle2 text-weight-medium text-grey-8"
+            input-class="text-body2"
           >
             <template v-slot:prepend>
               <q-icon name="person" color="primary" />
@@ -72,35 +72,35 @@
             v-model="editedProfile.last_name"
             label="Last Name"
             :rules="[(val) => !!val || 'Last name is required']"
-            class="text-body1"
+            class="text-body2"
             outlined
             stack-label
-            label-class="text-subtitle1 text-weight-medium text-grey-8"
-            input-class="text-body1"
+            label-class="text-subtitle2 text-weight-medium text-grey-8"
+            input-class="text-body2"
           >
             <template v-slot:prepend>
               <q-icon name="person" color="primary" />
             </template>
           </q-input>
 
-          <div class="row justify-end q-gutter-sm q-mt-xl">
+          <div class="row justify-end q-gutter-sm q-mt-lg">
             <q-btn
               flat
               color="grey-6"
               icon="close"
               label="Cancel"
-              class="text-body1 q-px-lg"
-              size="lg"
+              class="text-body2 q-px-md"
+              size="md"
               @click="cancelEditing"
             />
             <q-btn
               outline
               type="submit"
               color="primary"
-              icon="save"
+              icon="check"
               label="Save"
-              class="text-weight-medium text-body1 q-px-lg"
-              size="lg"
+              class="text-weight-medium text-body2 q-px-md"
+              size="md"
               :loading="isSaving"
             />
           </div>
