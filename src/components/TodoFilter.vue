@@ -4,28 +4,14 @@
 
     <div class="filters">
       <q-btn
+        v-for="filterType in filterTypes"
+        :key="filterType"
         flat
         no-caps
-        :class="{ selected: filter === 'all' }"
-        label="All"
+        :class="{ selected: filter === filterType }"
+        :label="filterType.charAt(0).toUpperCase() + filterType.slice(1)"
         class="filter-btn"
-        @click="$emit('update:filter', 'all')"
-      />
-      <q-btn
-        flat
-        no-caps
-        :class="{ selected: filter === 'active' }"
-        label="Active"
-        class="filter-btn"
-        @click="$emit('update:filter', 'active')"
-      />
-      <q-btn
-        flat
-        no-caps
-        :class="{ selected: filter === 'completed' }"
-        label="Completed"
-        class="filter-btn"
-        @click="$emit('update:filter', 'completed')"
+        @click="$emit('update:filter', filterType)"
       />
     </div>
 
@@ -42,11 +28,14 @@
 </template>
 
 <script setup>
+const filterTypes = ['all', 'active', 'completed']
+
 defineProps({
   filter: String,
   itemsLeft: Number,
   hasCompleted: Boolean,
 })
+
 defineEmits(['update:filter', 'clear-completed'])
 </script>
 

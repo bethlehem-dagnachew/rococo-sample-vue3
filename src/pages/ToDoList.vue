@@ -38,11 +38,13 @@
         <!-- Todo List -->
         <q-list v-else separator>
           <TodoItem
-            v-for="todo in todos"
+            v-for="(todo, index) in todos"
             :key="todo.entity_id"
             :todo="todo"
+            :index="index"
             @update:todo="updateTodo"
             @delete="deleteTodo"
+            @reorder="handleReorder"
           />
         </q-list>
 
@@ -107,6 +109,26 @@ const allCompleted = computed({
   get: () => todos.value.length > 0 && todos.value.every((todo) => todo.is_completed),
   set: (val) => toggleAll(val),
 })
+
+const handleReorder = async ({ fromIndex, toIndex }) => {
+  try {
+    const reorderedTodos = [...todos.value]
+    const [movedItem] = reorderedTodos.splice(fromIndex, 1)
+    reorderedTodos.splice(toIndex, 0, movedItem)
+
+    todos.value = reorderedTodos
+
+    const todoIds = reorderedTodos.map((todo) => todo.entity_id)
+    await TodoService.reorder(todoIds)
+  } catch (error) {
+    console.error('Failed to reorder todos:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Failed to reorder todos',
+    })
+    await fetchTodos()
+  }
+}
 
 const addTodo = async () => {
   const title = newTodo.value.trim()

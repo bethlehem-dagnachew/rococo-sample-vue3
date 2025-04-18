@@ -10,7 +10,7 @@
 
   .q-item {
     border-radius: 12px;
-    margin: 0 8px 8px 8px;
+    margin: 0 8px 8px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 1rem;
 
@@ -44,7 +44,6 @@
       }
 
       &:hover {
-        background: rgba(0, 0, 0, 0.08) !important;
         transform: translateX(4px);
       }
     }

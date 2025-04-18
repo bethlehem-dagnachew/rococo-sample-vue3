@@ -1,5 +1,14 @@
 <template>
-  <div class="todo-item" :class="{ completed: todo.is_completed }">
+  <div
+    class="todo-item"
+    :class="{ completed: todo.is_completed }"
+    draggable="true"
+    @dragstart="onDragStart"
+    @dragover.prevent
+    @drop="onDrop"
+  >
+    <q-icon name="drag_indicator" class="drag-handle" />
+
     <q-checkbox
       :model-value="todo.is_completed"
       @update:model-value="updateCompleted"
@@ -34,7 +43,7 @@
       flat
       round
       dense
-      icon="close"
+      icon="delete"
       color="grey-7"
       class="delete-btn"
       @click="$emit('delete', todo)"
@@ -50,12 +59,26 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  index: {
+    type: Number,
+    required: true,
+  },
 })
 
-const emit = defineEmits(['update:todo', 'delete'])
+const emit = defineEmits(['update:todo', 'delete', 'reorder'])
 
 const isEditing = ref(false)
 const editingTitle = ref('')
+
+const onDragStart = (e) => {
+  e.dataTransfer.setData('text/plain', props.index.toString())
+}
+
+const onDrop = (e) => {
+  const fromIndex = parseInt(e.dataTransfer.getData('text/plain'))
+  const toIndex = props.index
+  emit('reorder', { fromIndex, toIndex })
+}
 
 const updateCompleted = (value) => {
   emit('update:todo', {

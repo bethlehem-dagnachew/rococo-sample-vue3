@@ -83,6 +83,16 @@ class TodoService {
       throw error
     }
   }
+
+  async reorder(todoIds) {
+    try {
+      const response = await axiosInstance.post('/todo/reorder', { todo_ids: todoIds })
+      return response.data
+    } catch (error) {
+      console.error('Error reordering todos:', error)
+      throw error
+    }
+  }
 }
 
 export default new TodoService()
