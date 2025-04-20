@@ -67,7 +67,7 @@ class TodoService {
 
   async clearCompleted() {
     try {
-      await axios.delete('/todo/clear-completed')
+      await axios.delete('/todo')
       return true
     } catch (error) {
       console.error('Error clearing completed todos:', error)
