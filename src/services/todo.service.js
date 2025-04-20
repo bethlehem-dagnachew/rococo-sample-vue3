@@ -1,9 +1,9 @@
-import axiosInstance from './base.service'
+import axios from 'config/axios'
 
 class TodoService {
   async getAll(filter = 'all') {
     try {
-      const response = await axiosInstance.get(`/todo?filter=${filter}`)
+      const response = await axios.get(`/todo?filter=${filter}`)
       return response.data.todos
     } catch (error) {
       console.error('Error fetching todos:', error)
@@ -13,8 +13,8 @@ class TodoService {
 
   async getById(entity_id) {
     try {
-      const response = await axiosInstance.get(`/todo/${entity_id}`)
-      return response.data.todos
+      const response = await axios.get(`/todo/${entity_id}`)
+      return response.data.todo
     } catch (error) {
       console.error('Error fetching todo:', error)
       throw error
@@ -23,8 +23,8 @@ class TodoService {
 
   async create(title) {
     try {
-      const response = await axiosInstance.post('/todo', { title })
-      return response.data.todos
+      const response = await axios.post('/todo', { title })
+      return response.data.todo
     } catch (error) {
       console.error('Error creating todo:', error)
       throw error
@@ -33,11 +33,12 @@ class TodoService {
 
   async update(entity_id, { title, is_completed }) {
     try {
-      const response = await axiosInstance.patch(`/todo/${entity_id}`, {
-        title,
-        is_completed,
-      })
-      return response.data.todos
+      const updateData = {}
+      if (title !== undefined) updateData.title = title
+      if (is_completed !== undefined) updateData.is_completed = is_completed
+
+      const response = await axios.patch(`/todo/${entity_id}`, updateData)
+      return response.data.todo
     } catch (error) {
       console.error('Error updating todo:', error)
       throw error
@@ -46,8 +47,8 @@ class TodoService {
 
   async delete(entity_id) {
     try {
-      const response = await axiosInstance.delete(`/todo/${entity_id}`)
-      return response.data.todos
+      await axios.delete(`/todo/${entity_id}`)
+      return true
     } catch (error) {
       console.error('Error deleting todo:', error)
       throw error
@@ -56,8 +57,8 @@ class TodoService {
 
   async toggleCompletion(entity_id) {
     try {
-      const response = await axiosInstance.put(`/todo/${entity_id}/toggle`)
-      return response.data.todos
+      const response = await axios.post(`/todo/${entity_id}/toggle`)
+      return response.data.todo
     } catch (error) {
       console.error('Error toggling todo completion:', error)
       throw error
@@ -66,8 +67,8 @@ class TodoService {
 
   async clearCompleted() {
     try {
-      const response = await axiosInstance.delete('/todo')
-      return response.data.todos
+      await axios.delete('/todo/clear-completed')
+      return true
     } catch (error) {
       console.error('Error clearing completed todos:', error)
       throw error
@@ -76,7 +77,7 @@ class TodoService {
 
   async markAll(status) {
     try {
-      const response = await axiosInstance.post('/todo/mark-all', { status })
+      const response = await axios.post('/todo/mark-all', { status })
       return response.data
     } catch (error) {
       console.error('Error marking all todos:', error)
@@ -86,8 +87,8 @@ class TodoService {
 
   async reorder(todoIds) {
     try {
-      const response = await axiosInstance.post('/todo/reorder', { todo_ids: todoIds })
-      return response.data
+      const response = await axios.post('/todo/reorder', { todo_ids: todoIds })
+      return response.data.todos
     } catch (error) {
       console.error('Error reordering todos:', error)
       throw error
